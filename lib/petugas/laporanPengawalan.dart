@@ -1,25 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pengawalan_virtual/pengguna_jasa/pengiriman.dart';
-import 'package:pengawalan_virtual/petugas/pengawalan.dart';
 
-import 'package:pengawalan_virtual/register.dart';
+void main() => runApp(LaporanPengawalan());
 
-
-
-
-
-// void main() => runApp(AplikasiSaya());
-
-void main(){
-  runApp(
-    MaterialApp(
-      title: "Test aja",
-      home : Login(),
-    )
-  );
-}
-
-class Login extends StatelessWidget {
+class LaporanPengawalan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -65,10 +48,10 @@ class Login extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                margin: EdgeInsets.only(bottom: 35.0),
+                margin: EdgeInsets.only(bottom: 5.0),
                 child: Center(
                   child: Text(
-                    "Login",
+                    "Laporan Pengawalan",
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -76,76 +59,87 @@ class Login extends StatelessWidget {
                   ),
                 ),
               ),
-              TextField(
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
-                  ),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 255, 255, 255),
-                  labelText: "Email",
-                  hintText: "Masukkan Email",
-                ),
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
-                  ),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 255, 255, 255),
-                  labelText: "Password",
-                  hintText: "Masukkan Password",
-                ),
-              ),
-              SizedBox(height: 16.0),
               Container(
-                margin: EdgeInsets.only(top: 20.0), // Sesuaikan dengan spasi yang diinginkan
-                child: ElevatedButton(
-                  onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-                  },
-                  child: Text("Login"),
+                margin: EdgeInsets.symmetric(vertical: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildInfoRow("Nama Perusahaan", "PT Bumi Pangan Utama"),
+                    buildInfoRow("Tanggal", "01/12/2023"),
+                    buildInfoRow("No Pengajuan", "E/E/01.0/20230123/002464"),
+                    buildInfoRow("Jenis", "Daging Rajungan Pasteu"),
+                  ],
                 ),
               ),
               SizedBox(height: 16.0),
-              // Teks dan tombol register
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Belum ada akun? Silahkan"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Register()),
-                      );
-                    },
-                    child: Text("Register"),
+              TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
                   ),
-                ],
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Tujuan",
+                  hintText: "Masukkan Tujuan",
+                ),
               ),
-              Spacer(),
-              // Image.asset di ujung bawah
-              Image.asset(
-                'assets/img/LogoBKIPM.png',
-                height: 50,
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Waktu",
+                  hintText: "Masukkan Waktu",
+                ),
               ),
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Keterangan",
+                  hintText: "Masukkan Keterangan",
+                ),
+              ),
+              SizedBox(height: 16.0),
+                            TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Petugas",
+                  hintText: "Masukkan Petugas",
+                ),
+              ),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -154,4 +148,26 @@ class Login extends StatelessWidget {
   }
 }
 
-
+Widget buildInfoRow(String label, String value) {
+  return Container(
+    margin: EdgeInsets.symmetric(vertical: 5.0),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Text(":"),
+        SizedBox(width: 10), // Tambahkan spasi antara ":" dan value
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    ),
+  );
+}
