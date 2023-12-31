@@ -1,23 +1,10 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 
-import 'package:pengawalan_virtual/register.dart';
-
-
-
+void main() => runApp(Register());
 
 
-// void main() => runApp(AplikasiSaya());
-
-void main(){
-  runApp(
-    MaterialApp(
-      title: "Test aja",
-      home : Login(),
-    )
-  );
-}
-
-class Login extends StatelessWidget {
+class Register extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -66,7 +53,7 @@ class Login extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 35.0),
                 child: Center(
                   child: Text(
-                    "Login",
+                    "Register",
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -78,11 +65,28 @@ class Login extends StatelessWidget {
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Nama",
+                  hintText: "Masukkan Nama",
+                ),
+              ),
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue),
                   ),
                   filled: true,
                   fillColor: Color.fromARGB(255, 255, 255, 255),
@@ -96,11 +100,11 @@ class Login extends StatelessWidget {
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)), // Warna default
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Colors.blue), // Warna saat fokus
+                    borderSide: BorderSide(color: Colors.blue),
                   ),
                   filled: true,
                   fillColor: Color.fromARGB(255, 255, 255, 255),
@@ -109,29 +113,47 @@ class Login extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16.0),
-              Container(
-                margin: EdgeInsets.only(top: 20.0), // Sesuaikan dengan spasi yang diinginkan
-                child: ElevatedButton(
-                  onPressed: () {
-
-                  },
-                  child: Text("Login"),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 44, 175)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                  labelText: "Konfirmasi Password",
+                  hintText: "Masukkan Password",
                 ),
               ),
               SizedBox(height: 16.0),
-              // Teks dan tombol register
+              Container(
+                margin: EdgeInsets.only(top: 20.0), 
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Fungsi yang akan dijalankan ketika tombol ditekan
+                    // Misalnya, tempatkan logika register di sini
+                  },
+                  child: Text("Register"), // Ganti teks tombol menjadi "Register"
+                ),
+              ),
+              SizedBox(height: 16.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Belum ada akun? Silahkan"),
+                  Text("Sudah ada akun? Silahkan"),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Register()),
+                        MaterialPageRoute(builder: (context) => Login()),
                       );
                     },
-                    child: Text("Register"),
+                    child: Text("Login"),
                   ),
                 ],
               ),
@@ -148,5 +170,3 @@ class Login extends StatelessWidget {
     );
   }
 }
-
-
