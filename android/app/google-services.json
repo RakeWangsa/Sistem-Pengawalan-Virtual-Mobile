@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127953671912",
+    "project_id": "tugas-akhir-d36dd",
+    "storage_bucket": "tugas-akhir-d36dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127953671912:android:708376beb87cc2b28d1b5d",
+        "android_client_info": {
+          "package_name": "com.example.pengawalan_virtual"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe3A1GO5xlTxM553OcYMtCUmL00WCRyt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
