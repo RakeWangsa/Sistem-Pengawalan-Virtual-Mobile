@@ -224,12 +224,35 @@ var db = FirebaseFirestore.instance;
 body: FlutterMap(
   options: MapOptions(
     minZoom: 5.0,
+    initialCenter: LatLng.LatLng(-6.124487407691205, 106.65877266300464), // Koordinat Indonesia
   ),
   children: [
     TileLayer(
       urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       subdomains: ['a', 'b', 'c'],
     ),
+    MarkerLayer(
+      markers: [
+        Marker(point: LatLng.LatLng(-6.160164936412775, 106.76858326927852), child: Icon(
+                Icons.local_shipping,
+                color: Color.fromARGB(255, 17, 44, 244),
+                size: 25.0,
+              ),
+            ),
+        Marker(point: LatLng.LatLng(-6.225276324675301, 106.84672900320778), child: Icon(
+                Icons.location_pin,
+                color: Colors.red,
+                size: 25.0,
+              ),
+            ),
+        Marker(point: LatLng.LatLng(-6.129826216110446, 106.83630957201721), child: Icon(
+                Icons.location_pin,
+                color: Colors.red,
+                size: 25.0,
+              ),
+            ),
+      ]
+      ),
     Container(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -265,65 +288,85 @@ Container(
 
           Spacer(),
 Container(
-                height: 200, // Ganti nilai sesuai dengan kebutuhan max height
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(128),
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance.collection('Pengawalan').snapshots(),
-                              builder: (context,snapshot){
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return CircularProgressIndicator(); // Menampilkan loading indicator jika data sedang diambil
-                                } else {
+  height: 200, // Ganti nilai sesuai dengan kebutuhan max height
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(128),
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance.collection('Pengawalan').snapshots(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator(); // Menampilkan loading indicator jika data sedang diambil
+    } else {
       if (snapshot.hasError) {
         return Text('Error: ${snapshot.error}');
       } else {
-        return DataTable(
-          headingRowColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(31, 237, 237, 237)),
-          columns: [
-            DataColumn(label: Text('No Pengajuan', style: TextStyle(fontWeight: FontWeight.bold))),
-            DataColumn(label: Text('Tujuan', style: TextStyle(fontWeight: FontWeight.bold))),
-          ],
-          dataRowMinHeight: 30,
-          dividerThickness: 1.0,
-rows: snapshot.data != null
-    ? snapshot.data!.docs.map<DataRow>((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        String noPengajuan = data['No Pengajuan'] ?? '';
-        String tujuan = data['Tujuan'] ?? '';
-        return DataRow(
-          cells: [
-            DataCell(Text(noPengajuan)),
-            DataCell(Text(tujuan)),
-          ],
-        );
-      }).toList()
-    : [],
+return SingleChildScrollView(
+  scrollDirection: Axis.vertical,
+  child: ConstrainedBox(
+    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(15.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withAlpha(128),
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(31, 237, 237, 237)),
+            columns: [
+              DataColumn(label: Text('No Pengajuan', style: TextStyle(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Tujuan', style: TextStyle(fontWeight: FontWeight.bold))),
+            ],
+            dataRowMinHeight: 30,
+            dividerThickness: 1.0,
+            rows: snapshot.data != null
+                ? snapshot.data!.docs.map<DataRow>((doc) {
+                    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(data['No Pengajuan'] ?? '')),
+                        DataCell(Text(data['Tujuan'] ?? '')),
+                      ],
+                    );
+                  }).toList()
+                : [],
+          ),
+        ),
+      ),
+    ),
+  ),
+);
 
-
-        );
       }
     }
-                              }
-                            )
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+  },
+),
+
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
+
+
+
         ],
       ),
     ),
