@@ -21,7 +21,7 @@ Future<void> main() async{
   runApp(
     MaterialApp(
       title: "Test aja",
-      home : TestFirestore(),
+      home : Login(),
     )
   );
 }

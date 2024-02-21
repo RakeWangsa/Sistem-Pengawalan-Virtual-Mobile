@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as LatLng;
@@ -24,6 +25,10 @@ class MyHomePage2 extends StatefulWidget {
 }
 
 class _MyHomePageState2 extends State<MyHomePage2> {
+
+var db = FirebaseFirestore.instance;
+
+
   List<String> points = [
     "(poin berwarna hijau) E/E/01.0/20230123/002464 - IKI 1",
     "(poin berwarna hijau) E/E/01.0/20230123/002465 - IKI 2",
@@ -275,71 +280,43 @@ Container(
                               border: Border.all(color: Colors.black),
                               borderRadius: BorderRadius.circular(15.0),
                             ),
-                            child: DataTable(
-                              headingRowColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(31, 237, 237, 237)),
-                              columns: [
-                                DataColumn(label: Text('No Pengajuan', style: TextStyle(fontWeight: FontWeight.bold))),
-                                DataColumn(label: Text('Tujuan', style: TextStyle(fontWeight: FontWeight.bold))),
-                              ],
-                              dataRowMinHeight: 30,
-                              dividerThickness: 1.0,
-                              rows: [
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                                DataRow(
-                                  cells: [
-                                    DataCell(Text('Data')),
-                                    DataCell(Text('Data')),
-                                  ],
-                                ),
-                              ],
-                            ),
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance.collection('Pengawalan').snapshots(),
+                              builder: (context,snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator(); // Menampilkan loading indicator jika data sedang diambil
+                                } else {
+      if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}');
+      } else {
+        return DataTable(
+          headingRowColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(31, 237, 237, 237)),
+          columns: [
+            DataColumn(label: Text('No Pengajuan', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('Tujuan', style: TextStyle(fontWeight: FontWeight.bold))),
+          ],
+          dataRowMinHeight: 30,
+          dividerThickness: 1.0,
+rows: snapshot.data != null
+    ? snapshot.data!.docs.map<DataRow>((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String noPengajuan = data['No Pengajuan'] ?? '';
+        String tujuan = data['Tujuan'] ?? '';
+        return DataRow(
+          cells: [
+            DataCell(Text(noPengajuan)),
+            DataCell(Text(tujuan)),
+          ],
+        );
+      }).toList()
+    : [],
+
+
+        );
+      }
+    }
+                              }
+                            )
                           ),
                         ),
                       ),
