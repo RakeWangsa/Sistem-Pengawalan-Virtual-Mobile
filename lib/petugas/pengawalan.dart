@@ -27,7 +27,9 @@ class MyHomePage2 extends StatefulWidget {
 class _MyHomePageState2 extends State<MyHomePage2> {
 
 var db = FirebaseFirestore.instance;
-
+int noTable = 1;
+int noTruck = 1;
+int noIKI = 1;
 
   List<String> points = [
     "(poin berwarna hijau) E/E/01.0/20230123/002464 - IKI 1",
@@ -231,28 +233,103 @@ body: FlutterMap(
       urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       subdomains: ['a', 'b', 'c'],
     ),
-    MarkerLayer(
-      markers: [
-        Marker(point: LatLng.LatLng(-6.160164936412775, 106.76858326927852), child: Icon(
-                Icons.local_shipping,
-                color: Color.fromARGB(255, 17, 44, 244),
-                size: 25.0,
-              ),
-            ),
-        Marker(point: LatLng.LatLng(-6.225276324675301, 106.84672900320778), child: Icon(
-                Icons.location_pin,
-                color: Colors.red,
-                size: 25.0,
-              ),
-            ),
-        Marker(point: LatLng.LatLng(-6.129826216110446, 106.83630957201721), child: Icon(
-                Icons.location_pin,
-                color: Colors.red,
-                size: 25.0,
-              ),
-            ),
-      ]
+    StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance.collection('Lokasi').orderBy('Nama').snapshots(), 
+  builder: (context, snapshot) {
+    if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    }
+
+    if (!snapshot.hasData) {
+      return CircularProgressIndicator(); // Menampilkan loading indicator jika data belum tersedia
+    }
+
+    return MarkerLayer(
+      markers: snapshot.data!.docs.map<Marker>((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        IconData iconData;
+        Color iconColor;
+
+    if (data['Jenis'] == 'truck') {
+      iconData = Icons.local_shipping;
+      iconColor = Color.fromARGB(255, 17, 44, 244);
+    } else if (data['Jenis'] == 'IKI') {
+      iconData = Icons.location_pin;
+      iconColor = Color.fromARGB(255, 244, 17, 17);
+    }else {
+      // Default icon jika tidak ada nilai yang cocok
+      iconData = Icons.error;
+      iconColor = Color.fromARGB(255, 17, 44, 244);
+    }
+
+        return Marker(
+          point: LatLng.LatLng(
+    double.parse(data['LatLong'].split(',')[0]), // Latitude
+    double.parse(data['LatLong'].split(',')[1]), // Longitude
+  ),
+          child: Stack(
+    alignment: Alignment.center,
+    children: [
+      Icon(
+        iconData,
+        color: iconColor,
+        size: 20.0,
       ),
+      Positioned(
+        top : -3,
+        child: Container(
+          child: Text(
+            "${noTruck++}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+        );
+      }).toList()
+      ..addAll(snapshot.data!.docs.map<Marker>((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          return Marker(
+            point: LatLng.LatLng(
+              double.parse(data['LatLongIKI'].split(',')[0]), // Latitude
+              double.parse(data['LatLongIKI'].split(',')[1]), // Longitude
+            ),
+            child: Stack(
+    alignment: Alignment.center,
+    children: [
+      Icon(
+        Icons.location_pin,
+        color: Color.fromARGB(255, 244, 17, 17),
+        size: 20.0,
+      ),
+      Positioned(
+        top : -3,
+        child: Container(
+          child: Text(
+            "${noIKI++}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+              
+          );
+        })),
+    );
+    
+  }
+),
+
     Container(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -304,7 +381,7 @@ Container(
                 borderRadius: BorderRadius.circular(15.0),
               ),
               child: StreamBuilder<QuerySnapshot>(
-  stream: FirebaseFirestore.instance.collection('Pengawalan').snapshots(),
+  stream: FirebaseFirestore.instance.collection('Pengawalan').orderBy('No Pengajuan').snapshots(),
   builder: (context, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return CircularProgressIndicator(); // Menampilkan loading indicator jika data sedang diambil
@@ -329,6 +406,7 @@ return SingleChildScrollView(
           child: DataTable(
             headingRowColor: MaterialStateColor.resolveWith((states) => Color.fromARGB(31, 237, 237, 237)),
             columns: [
+              DataColumn(label: Text('No', style: TextStyle(fontWeight: FontWeight.bold))),
               DataColumn(label: Text('No Pengajuan', style: TextStyle(fontWeight: FontWeight.bold))),
               DataColumn(label: Text('Tujuan', style: TextStyle(fontWeight: FontWeight.bold))),
             ],
@@ -339,7 +417,36 @@ return SingleChildScrollView(
                     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                     return DataRow(
                       cells: [
-                        DataCell(Text(data['No Pengajuan'] ?? '')),
+                        DataCell(Text('${noTable++}')),
+                        DataCell(
+                          Text(data['No Pengajuan'] ?? ''),
+                          onTap: (){
+                            //ketika di klik saya ingin mapnya langsung diarahkan ke marker yang data['Nama'] nya bernilai sama dengan data['No Pengajuan'] disini
+                          },
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Detail Data'),
+                                content: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('No Pengajuan: ${data['No Pengajuan']}'),
+                                    Text('Tujuan: ${data['Tujuan']}'),
+                                    // Tambahkan kolom lainnya sesuai kebutuhan
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('Tutup'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                         DataCell(Text(data['Tujuan'] ?? '')),
                       ],
                     );
@@ -351,6 +458,7 @@ return SingleChildScrollView(
     ),
   ),
 );
+
 
       }
     }
