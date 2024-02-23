@@ -14,12 +14,17 @@ class MyApp2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage2(),
+      home: MyHomePage2(-6.213332697186609, 106.82594181574434),
     );
   }
 }
 
 class MyHomePage2 extends StatefulWidget {
+  final double lat;
+  final double lng;
+
+  MyHomePage2(this.lat, this.lng);
+
   @override
   _MyHomePageState2 createState() => _MyHomePageState2();
 }
@@ -30,6 +35,9 @@ var db = FirebaseFirestore.instance;
 int noTable = 1;
 int noTruck = 1;
 int noIKI = 1;
+double initialZoom = 11;
+final LatLng.LatLng defaultInitialCenter = LatLng.LatLng(-6.213332697186609, 106.82594181574434);
+  LatLng.LatLng initialCenter = LatLng.LatLng(0, 0); // Inisialisasi initialCenter dengan nilai default
 
   List<String> points = [
     "(poin berwarna hijau) E/E/01.0/20230123/002464 - IKI 1",
@@ -37,6 +45,18 @@ int noIKI = 1;
     "(poin berwarna merah) E/E/01.0/20230123/002466 - IKI 3",
   ];
   @override
+   
+    void initState() {
+    super.initState();
+    print(widget.lat);
+    print(widget.lng);
+    initialCenter = LatLng.LatLng(widget.lat, widget.lng); // Mengatur nilai initialCenter saat initState
+    if (widget.lat != -6.213332697186609 && widget.lng!=106.82594181574434){
+      initialZoom=16;
+    };
+
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -226,7 +246,8 @@ int noIKI = 1;
 body: FlutterMap(
   options: MapOptions(
     minZoom: 5.0,
-    initialCenter: LatLng.LatLng(-6.124487407691205, 106.65877266300464), // Koordinat Indonesia
+    initialCenter: initialCenter,
+    initialZoom: initialZoom,
   ),
   children: [
     TileLayer(
@@ -303,7 +324,7 @@ body: FlutterMap(
     alignment: Alignment.center,
     children: [
       Icon(
-        Icons.location_pin,
+        Icons.house,
         color: Color.fromARGB(255, 244, 17, 17),
         size: 20.0,
       ),
@@ -420,9 +441,10 @@ return SingleChildScrollView(
                         DataCell(Text('${noTable++}')),
                         DataCell(
                           Text(data['No Pengajuan'] ?? ''),
-                          onTap: (){
-                            //ketika di klik saya ingin mapnya langsung diarahkan ke marker yang data['Nama'] nya bernilai sama dengan data['No Pengajuan'] disini
+                          onTap: () {
+updateInitialCenter(data['No Pengajuan']);
                           },
+
                           onLongPress: () {
                             showDialog(
                               context: context,
@@ -483,4 +505,44 @@ return SingleChildScrollView(
 
     );
   }
+
+
+  
+void updateInitialCenter(String noPengajuan) {
+  FirebaseFirestore.instance
+      .collection('Lokasi')
+      .where('Nama', isEqualTo: noPengajuan)
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+    if (querySnapshot.size > 0) {
+      var data = querySnapshot.docs.first.data();
+var latLngString = (data as Map<String, dynamic>?)?['LatLong'] ?? '0,0';
+      var latLngArray = latLngString.split(',');
+      var lat = double.parse(latLngArray[0]);
+      var lng = double.parse(latLngArray[1]);
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (BuildContext context) => MyHomePage2(lat, lng),
+    ),
+  );
+    } else {
+      // Lokasi tidak ditemukan
+    }
+  }).catchError((error) {
+    // Handle error
+  });
+}
+
+// void updateInitialCenter(double lat, double lng) {
+//   Navigator.pushReplacement(
+//     context,
+//     MaterialPageRoute(
+//       builder: (BuildContext context) => MyHomePage2(lat, lng),
+//     ),
+//   );
+// }
+
+
+
 }
