@@ -48,8 +48,6 @@ final LatLng.LatLng defaultInitialCenter = LatLng.LatLng(-6.213332697186609, 106
    
     void initState() {
     super.initState();
-    print(widget.lat);
-    print(widget.lng);
     initialCenter = LatLng.LatLng(widget.lat, widget.lng); // Mengatur nilai initialCenter saat initState
     if (widget.lat != -6.213332697186609 && widget.lng!=106.82594181574434){
       initialZoom=16;
@@ -273,10 +271,10 @@ body: FlutterMap(
 
     if (data['Jenis'] == 'truck') {
       iconData = Icons.local_shipping;
-      iconColor = Color.fromARGB(255, 17, 44, 244);
+      iconColor = Color.fromARGB(255, 244, 17, 17);
     } else if (data['Jenis'] == 'IKI') {
       iconData = Icons.location_pin;
-      iconColor = Color.fromARGB(255, 244, 17, 17);
+      iconColor = Color.fromARGB(255, 17, 44, 244);
     }else {
       // Default icon jika tidak ada nilai yang cocok
       iconData = Icons.error;
@@ -324,8 +322,8 @@ body: FlutterMap(
     alignment: Alignment.center,
     children: [
       Icon(
-        Icons.house,
-        color: Color.fromARGB(255, 244, 17, 17),
+        Icons.home_work_sharp,
+        color: Color.fromARGB(255, 17, 44, 244),
         size: 20.0,
       ),
       Positioned(

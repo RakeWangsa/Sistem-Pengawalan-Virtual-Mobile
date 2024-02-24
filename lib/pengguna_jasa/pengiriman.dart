@@ -5,6 +5,7 @@ import 'package:pengawalan_virtual/pengguna_jasa/dokumentasi.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as LatLng;
 import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
 void main() => runApp(MyApp());
 
@@ -31,6 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
 LatLng.LatLng initialCenter = LatLng.LatLng(0, 0); 
 MapController mapController = MapController();
 List<Marker> markers = [];
+Timer? _timer;
 
 
 
@@ -40,9 +42,32 @@ List<Marker> markers = [];
   @override
 
 
-
   void initState() {
     super.initState();
+        getLocation((coordinates) {
+      setState(() {
+        var latLngArray = coordinates.split(',');
+        var lat = double.parse(latLngArray[0]);
+        var lng = double.parse(latLngArray[1]);
+        initialCenter = LatLng.LatLng(lat, lng);
+        markers.add(
+        Marker(
+          width: 80.0,
+          height: 80.0,
+          point: LatLng.LatLng(lat, lng),
+          child: Container(
+            child: Icon(
+              Icons.location_pin,
+              color: Colors.red,
+              size: 30.0,
+            ),
+          ),
+        ),
+      );
+        mapController.move(initialCenter, 16.0); // Pindahkan peta ke initialCenter
+      });
+    });
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
     getLocation((coordinates) {
       setState(() {
         var latLngArray = coordinates.split(',');
@@ -67,9 +92,38 @@ List<Marker> markers = [];
       });
     });
 
-
-
+    });
   }
+
+  // void initState() {
+  //   super.initState();
+  //   getLocation((coordinates) {
+  //     setState(() {
+  //       var latLngArray = coordinates.split(',');
+  //       var lat = double.parse(latLngArray[0]);
+  //       var lng = double.parse(latLngArray[1]);
+  //       initialCenter = LatLng.LatLng(lat, lng);
+  //       markers.add(
+  //       Marker(
+  //         width: 80.0,
+  //         height: 80.0,
+  //         point: LatLng.LatLng(lat, lng),
+  //         child: Container(
+  //           child: Icon(
+  //             Icons.location_pin,
+  //             color: Colors.red,
+  //             size: 30.0,
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //       mapController.move(initialCenter, 16.0); // Pindahkan peta ke initialCenter
+  //     });
+  //   });
+
+
+
+  // }
 
   void getLocation(Function(String) callback) async {
     Position position =
@@ -80,6 +134,14 @@ List<Marker> markers = [];
     });
     callback(userCoordinates);
   }
+
+@override
+    void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
 
   Widget build(BuildContext context) {
     return Scaffold(

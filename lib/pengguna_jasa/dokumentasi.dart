@@ -1,7 +1,9 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:pengawalan_virtual/main.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/pengiriman.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/dashboard.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/kamera.dart';
 
 void main() => runApp(Dokumentasi());
 
@@ -232,7 +234,13 @@ class Dokumentasi extends StatelessWidget {
                                   cells: [
                                     DataCell(Text('Data')),
                                     DataCell(Text('Data')),
-                                    DataCell(Icon(Icons.camera_alt)),
+                                    DataCell(Icon(Icons.camera_alt),onTap: () async{
+                                      final cameras = await availableCameras();
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(builder: (context) => Kamera(cameras:cameras)),
+                                                            );
+                                    },),
                                   ],
                                 ),
                                 DataRow(
