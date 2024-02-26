@@ -130,6 +130,7 @@ class Login extends StatelessWidget {
                   child: Text("Login"),
                 ),
               ),
+              
               SizedBox(height: 16.0),
               // Teks dan tombol register
               Row(
