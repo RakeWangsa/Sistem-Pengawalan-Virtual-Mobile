@@ -1,127 +1,281 @@
 import 'dart:io';
-
-import 'package:camera/camera.dart';
+import 'package:pengawalan_virtual/main.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/pengiriman.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/dashboard.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/dokumentasi.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  final cameras = await availableCameras();
-  runApp(Kamera(cameras: cameras));
+void main() {
+  runApp(TesKamera());
 }
 
-class Kamera extends StatelessWidget {
-  final List<CameraDescription> cameras;
-  Kamera({super.key, required this.cameras});
-
-  // This widget is the root of your application.
+class TesKamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dokumentasi',
+      title: 'Kamera',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CameraScreen(cameras: cameras,),
+      home: MyHomePage(),
     );
   }
 }
 
-class CameraScreen extends StatefulWidget {
-  final List<CameraDescription> cameras;
-  const CameraScreen({Key? key, required this.cameras}) : super(key: key);
-
+class MyHomePage extends StatefulWidget {
   @override
-  State<CameraScreen> createState() => _CameraScreenState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _CameraScreenState extends State<CameraScreen> {
+class _MyHomePageState extends State<MyHomePage> {
+  File? image;
 
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _controller = CameraController(
-      widget.cameras[0],
-      ResolutionPreset.medium,
-    );
-    _initializeControllerFuture = _controller.initialize();
+  Future<void> getImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? imagePicked =
+        await picker.pickImage(source: ImageSource.camera);
+    if (imagePicked != null) {
+      setState(() {
+        image = File(imagePicked.path);
+      });
+      // Upload gambar ke Firebase Storage
+      await uploadImageToFirebaseStorage();
+    }
   }
-@override
-void dispose() {
-  _controller.dispose(); // Hentikan pemutaran kamera sebelum widget dihapus
-  super.dispose();
-}
+
+  Future<void> uploadImageToFirebaseStorage() async {
+    if (image != null) {
+      try {
+        // Ambil referensi ke Firebase Storage
+        firebase_storage.Reference ref = firebase_storage
+            .FirebaseStorage.instance
+            .ref()
+            .child('images/${DateTime.now().toString()}.jpg');
+
+        // Upload file gambar ke Firebase Storage
+        await ref.putFile(image!);
+
+        // Dapatkan URL download gambar yang diupload
+        String imageUrl = await ref.getDownloadURL();
+
+        // Tampilkan URL download gambar di konsol
+        print('Image uploaded to Firebase Storage: $imageUrl');
+      } catch (e) {
+        print('Error uploading image to Firebase Storage: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dokumentasi'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(56.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 38, 52, 255),
+                Color.fromARGB(255, 0, 150, 255),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: AppBar(
+            title: Text(
+              "Pengawalan Virtual",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 38, 52, 255),
+                          Color.fromARGB(255, 0, 150, 255),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width:
+                                    2.0, // Atur lebar border sesuai keinginan
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundImage:
+                                  AssetImage('assets/img/prabowo.jpg'),
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Prabowo Subianto',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.dashboard),
+                        SizedBox(width: 10),
+                        Text('Dashboard'),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Dashboard()),
+                      );
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.local_shipping),
+                        SizedBox(width: 10),
+                        Text('Pengiriman'),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    tileColor: Colors.grey[300],
+                    title: Row(
+                      children: [
+                        Icon(Icons.camera_alt),
+                        SizedBox(width: 10),
+                        Text('Dokumentasi'),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Dokumentasi()),
+                      );
+                    },
+                  ),
+                  Divider(), // Add a divider for visual separation
+                  ListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.logout), // Add a logout icon
+                        SizedBox(width: 10),
+                        Text('Logout'),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Image.asset di paling bawah
+            Container(
+              padding: EdgeInsets.all(16.0),
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                'assets/img/LogoBKIPM.png',
+                height: 50,
+              ),
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera),
-        onPressed: () async {
-          try {
-            await _initializeControllerFuture;
-            final path = join(
-              (await getTemporaryDirectory()).path,
-              '${DateTime.now()}.png',
-            );
-            await _controller.takePicture();
-            // Simpan gambar ke Firebase Storage
-            await _uploadImageToFirebaseStorage(File(path));
-            // Tampilkan snackbar jika berhasil
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gambar berhasil disimpan')),
-            );
-          } catch (e) {
-            // Tampilkan snackbar jika gagal
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gagal menyimpan gambar: $e')),
-            );
-          }
-        },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 191, 229, 255),
+              Color.fromARGB(255, 89, 186, 255),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: 5.0),
+              child: Center(
+                child: Text(
+                  "Kamera",
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await getImage();
+                    },
+                    child: Text('Open Camera'),
+                  ),
+                  SizedBox(height: 20.0),
+                  image != null ? Image.file(image!) : Container(),
+                  Text(
+                    'Foto Tampak Atas',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-Future<void> _uploadImageToFirebaseStorage(File imageFile) async {
-  try {
-    final Directory tempDir = await getTemporaryDirectory();
-    final String tempPath = tempDir.path;
-    final String fileName = '${DateTime.now()}.png';
-    final String filePath = '$tempPath/$fileName';
-
-    // Salin file gambar ke direktori sementara
-    await imageFile.copy(filePath);
-
-    final firebaseStorageRef = FirebaseStorage.instance.ref().child('images/$fileName');
-    await firebaseStorageRef.putFile(File(filePath));
-
-    // Hapus file yang disalin ke direktori sementara
-    await File(filePath).delete();
-
-  } catch (e) {
-    print('Gagal mengunggah gambar ke Firebase Storage: $e');
-    throw e;
-  }
-}
-
 }

@@ -235,10 +235,10 @@ class Dokumentasi extends StatelessWidget {
                                     DataCell(Text('Data')),
                                     DataCell(Text('Data')),
                                     DataCell(Icon(Icons.camera_alt),onTap: () async{
-                                      final cameras = await availableCameras();
+                                      // final cameras = await availableCameras();
                                                             Navigator.push(
                                                               context,
-                                                              MaterialPageRoute(builder: (context) => Kamera(cameras:cameras)),
+                                                              MaterialPageRoute(builder: (context) => TesKamera()),
                                                             );
                                     },),
                                   ],
