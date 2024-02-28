@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +21,7 @@ class Kamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Dokumentasi',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -59,7 +63,7 @@ void dispose() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Camera Magic'),
+        title: const Text('Dokumentasi'),
       ),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
@@ -72,7 +76,8 @@ void dispose() {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async{
+        child: Icon(Icons.camera),
+        onPressed: () async {
           try {
             await _initializeControllerFuture;
             final path = join(
@@ -80,16 +85,43 @@ void dispose() {
               '${DateTime.now()}.png',
             );
             await _controller.takePicture();
-            SnackBar snackBar = SnackBar(
-              content: Text('Picture saved to $path'),
+            // Simpan gambar ke Firebase Storage
+            await _uploadImageToFirebaseStorage(File(path));
+            // Tampilkan snackbar jika berhasil
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gambar berhasil disimpan')),
             );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } catch (e) {
-            print(e);
+            // Tampilkan snackbar jika gagal
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gagal menyimpan gambar: $e')),
+            );
           }
         },
-        child: const Icon(Icons.camera_alt),
       ),
     );
   }
+
+Future<void> _uploadImageToFirebaseStorage(File imageFile) async {
+  try {
+    final Directory tempDir = await getTemporaryDirectory();
+    final String tempPath = tempDir.path;
+    final String fileName = '${DateTime.now()}.png';
+    final String filePath = '$tempPath/$fileName';
+
+    // Salin file gambar ke direktori sementara
+    await imageFile.copy(filePath);
+
+    final firebaseStorageRef = FirebaseStorage.instance.ref().child('images/$fileName');
+    await firebaseStorageRef.putFile(File(filePath));
+
+    // Hapus file yang disalin ke direktori sementara
+    await File(filePath).delete();
+
+  } catch (e) {
+    print('Gagal mengunggah gambar ke Firebase Storage: $e');
+    throw e;
+  }
+}
+
 }

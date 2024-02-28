@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pengawalan_virtual/firebase_options.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/pengiriman.dart';
 import 'package:pengawalan_virtual/petugas/pengawalan.dart';
@@ -141,7 +142,7 @@ class Login extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Register()),
+                        MaterialPageRoute(builder: (context) => MyApp2()),
                       );
                     },
                     child: Text("Register"),
@@ -154,6 +155,19 @@ class Login extends StatelessWidget {
                 'assets/img/LogoBKIPM.png',
                 height: 50,
               ),
+              SizedBox(height: 5.0),
+              Center(
+                child: Container(
+                  child: Text(
+                    "Created By Rake Wangsa & Auliya Putri",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 65, 96, 163),
+                    ),
+                  ),
+                ),
+              ),
+
+
             ],
           ),
         ),
