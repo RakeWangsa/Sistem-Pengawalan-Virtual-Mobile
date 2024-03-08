@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +8,9 @@ import 'package:pengawalan_virtual/petugas/pengawalan.dart';
 
 import 'package:pengawalan_virtual/register.dart';
 import 'package:pengawalan_virtual/test_firestore.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 
 
@@ -28,6 +32,45 @@ Future<void> main() async{
 }
 
 class Login extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  Login({Key? key}) : super(key: key);
+
+
+Future<void> signInWithEmailAndPassword(BuildContext context, String email, String password) async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+    
+    // Ambil data pengguna dari Firestore
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+    // Periksa role pengguna
+    String role = userSnapshot['Role'];
+        print(role);
+    // Arahkan pengguna ke halaman yang sesuai berdasarkan role
+    if (role == 'Petugas') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp2()),
+      );
+    } else if (role == 'Pengguna Jasa') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp()),
+      );
+    } else {
+      // Jika role tidak sesuai, tindakan tambahan sesuai kebutuhan aplikasi Anda
+    }
+  } catch (e) {
+    // Jika terjadi error, tampilkan pesan error
+    print('Error signing in: $e');
+  }
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -85,6 +128,7 @@ class Login extends StatelessWidget {
                 ),
               ),
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -102,6 +146,7 @@ class Login extends StatelessWidget {
               ),
               SizedBox(height: 16.0),
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -122,14 +167,14 @@ class Login extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: 20.0), // Sesuaikan dengan spasi yang diinginkan
                 child: ElevatedButton(
-                  onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-                  },
-                  child: Text("Login"),
-                ),
+onPressed: () {
+  signInWithEmailAndPassword(context, emailController.text, passwordController.text);
+},
+
+  child: Text("Login"),
+),
+
+
               ),
               
               SizedBox(height: 16.0),

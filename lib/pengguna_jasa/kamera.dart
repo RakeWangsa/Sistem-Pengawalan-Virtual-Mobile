@@ -108,6 +108,13 @@ Future<void> uploadImageToFirebaseStorage() async {
       if (snapshot.docs.isNotEmpty) {
         // Dokumen sudah ada, maka update kolom 'gambar' saja
         var docId = snapshot.docs.first.id;
+        
+        // Hapus foto lama dari Firebase Storage
+        await firebase_storage.FirebaseStorage.instance
+            .refFromURL(snapshot.docs.first['gambar'])
+            .delete();
+
+        // Update data di Firestore
         await FirebaseFirestore.instance
             .collection('Dokumentasi')
             .doc(docId)
@@ -129,6 +136,7 @@ Future<void> uploadImageToFirebaseStorage() async {
     }
   }
 }
+
 
 
   @override
@@ -307,7 +315,7 @@ Future<void> uploadImageToFirebaseStorage() async {
               margin: EdgeInsets.only(bottom: 5.0),
               child: Center(
                 child: Text(
-                  "Kamera",
+                  "Foto",
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -315,31 +323,41 @@ Future<void> uploadImageToFirebaseStorage() async {
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+
                   SizedBox(height: 20.0),
+                  // image != null ? Image.file(image!) : Container(),
+                                    Text(
+                    'Tampak Atas',
+                    style: TextStyle(fontSize: 18.0,fontWeight: FontWeight.bold,),
+                  ),
+                              SizedBox(height: 16.0),
+Container(
+  decoration: BoxDecoration(
+    border: Border.all(
+      color: Colors.black, // Warna border
+      width: 2, // Lebar border dalam pixel
+    ),
+  ),
+  child: Image.network(
+    imageUrl ?? 'https://firebasestorage.googleapis.com/v0/b/tugas-akhir-d36dd.appspot.com/o/images%2FimageNotFound.jpeg?alt=media&token=e48c2b64-140d-47d6-b3c6-99260571357f',
+    fit: BoxFit.cover,
+    width: 300,
+    height: 300, // atau sesuaikan dengan kebutuhan Anda
+  ),
+),
+
+
+            SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
                       await getImage();
                     },
                     child: Text('Open Camera'),
-                  ),
-                  SizedBox(height: 20.0),
-                  image != null ? Image.file(image!) : Container(),
-                  Image.network(
-imageUrl ?? '',
-  fit: BoxFit.cover,
-  width:300,
-  height:300 // atau sesuaikan dengan kebutuhan Anda
-),
-
-
-                  Text(
-                    'Foto Tampak Atas',
-                    style: TextStyle(fontSize: 18.0),
                   ),
                 ],
               ),
