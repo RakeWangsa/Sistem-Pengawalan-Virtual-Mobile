@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pengawalan_virtual/main.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/dashboard.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/dokumentasi.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/drawer.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as LatLng;
 import 'package:geolocator/geolocator.dart';
@@ -45,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   MapController mapController = MapController();
   List<Marker> markers = [];
   Timer? _timer;
+
 
   String _locationName = '';
 
@@ -145,6 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+
+
   void getLocation(Function(String) callback) async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
@@ -197,136 +202,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 38, 52, 255),
-                          Color.fromARGB(255, 0, 150, 255),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width:
-                                    2.0, // Atur lebar border sesuai keinginan
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundImage:
-                                  AssetImage('assets/img/prabowo.jpg'),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Prabowo Subianto',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Icon(Icons.dashboard),
-                        SizedBox(width: 10),
-                        Text('Dashboard'),
-                      ],
-                    ),
-                    onTap: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dashboard()),
-                      );
-                    },
-                  ),
-                  Divider(),
-                  ListTile(
-                    tileColor: Colors.grey[300],
-                    title: Row(
-                      children: [
-                        Icon(Icons.local_shipping),
-                        SizedBox(width: 10),
-                        Text('Pengiriman'),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-                    },
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Icon(Icons.camera_alt),
-                        SizedBox(width: 10),
-                        Text('Dokumentasi'),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dokumentasi()),
-                      );
-                    },
-                  ),
-                  // ElevatedButton(child: Text("Get Location"),onPressed: getLocation,),
-
-                  Divider(), // Add a divider for visual separation
-                  ListTile(
-                    title: Row(
-                      children: [
-                        Icon(Icons.logout), // Add a logout icon
-                        SizedBox(width: 10),
-                        Text('Logout'),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            // Image.asset di paling bawah
-            Container(
-              padding: EdgeInsets.all(16.0),
-              alignment: Alignment.bottomCenter,
-              child: Image.asset(
-                'assets/img/LogoBKIPM.png',
-                height: 50,
-              ),
-            ),
-          ],
-        ),
+      drawer: AppDrawer(
+        page : 'pengiriman',
       ),
       body: FlutterMap(
         options: MapOptions(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pengawalan_virtual/main.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/pengiriman.dart';
 import 'package:pengawalan_virtual/pengguna_jasa/dokumentasi.dart';
+import 'package:pengawalan_virtual/pengguna_jasa/drawer.dart';
 
 void main() => runApp(Dashboard());
 
@@ -35,133 +36,9 @@ class Dashboard extends StatelessWidget {
             ),
           ),
         ),
-        drawer: Drawer(
-  child: Column(
-    children: [
-      Expanded(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 38, 52, 255),
-                    Color.fromARGB(255, 0, 150, 255),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0, // Atur lebar border sesuai keinginan
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundImage: AssetImage('assets/img/prabowo.jpg'),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Prabowo Subianto',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ListTile(
-              tileColor: Colors.grey[300],
-              title: Row(
-                children: [
-                  Icon(Icons.dashboard),
-                  SizedBox(width: 10),
-                  Text('Dashboard'),
-                ],
-              ),
-              onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dashboard()),
-                      );
-              },
-            ),
-            Divider(), 
-            ListTile(
-              title: Row(
-                children: [
-                  Icon(Icons.local_shipping),
-                  SizedBox(width: 10),
-                  Text('Pengiriman'),
-                ],
-              ),
-              onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-              },
-            ),
-            Divider(), 
-            ListTile(
-              title: Row(
-                children: [
-                  Icon(Icons.camera_alt), 
-                  SizedBox(width: 10),
-                  Text('Dokumentasi'),
-                ],
-              ),
-              onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dokumentasi()),
-                      );
-              },
-            ),
-            Divider(), // Add a divider for visual separation
-            ListTile(
-              title: Row(
-                children: [
-                  Icon(Icons.logout), // Add a logout icon
-                  SizedBox(width: 10),
-                  Text('Logout'),
-                ],
-              ),
-              onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                      );
-              },
-            ),
-          ],
+        drawer: AppDrawer(
+                  page : 'dashboard',
         ),
-      ),
-      // Image.asset di paling bawah
-      Container(
-        padding: EdgeInsets.all(16.0),
-        alignment: Alignment.bottomCenter,
-        child: Image.asset(
-          'assets/img/LogoBKIPM.png',
-          height: 50,
-        ),
-      ),
-    ],
-  ),
-),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

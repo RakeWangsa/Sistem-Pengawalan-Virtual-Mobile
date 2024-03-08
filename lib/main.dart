@@ -47,7 +47,7 @@ Future<void> signInWithEmailAndPassword(BuildContext context, String email, Stri
 
     // Periksa role pengguna
     String role = userSnapshot['Role'];
-        print(role);
+
     // Arahkan pengguna ke halaman yang sesuai berdasarkan role
     if (role == 'Petugas') {
       Navigator.push(
@@ -187,7 +187,7 @@ onPressed: () {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MyApp2()),
+                        MaterialPageRoute(builder: (context) => MyApp()),
                       );
                     },
                     child: Text("Register"),
